@@ -48,11 +48,12 @@ export const useAuthStore = defineStore('auth', () => {
   const logIn = async (payload: AuthPayload) => {
     const response = await signInWithEmailAndPassword(getAuth(), payload.email, payload.password)
     if (response) {
-      setUser(await response.user.uid)
-      setToken(await response.user.getIdToken())
-      localStorage.setItem('token', token.value)
-      localStorage.setItem('userId', userId.value)
-      console.log(getAuth().currentUser)
+      const tokenString = await response.user.getIdToken()
+      const uid = await response.user.uid
+      setUser(tokenString)
+      setToken(uid)
+      localStorage.setItem('token', tokenString)
+      localStorage.setItem('userId', uid)
     }
   }
 

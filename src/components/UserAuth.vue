@@ -15,7 +15,6 @@ const name = ref('')
 const authMode = ref(AuthMode.Login)
 
 const authStore = useAuthStore()
-const { isAuthenticated } = storeToRefs(authStore)
 
 const login = () => {
   authStore.logIn({ email: email.value, password: password.value })

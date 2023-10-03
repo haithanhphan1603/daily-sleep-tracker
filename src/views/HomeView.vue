@@ -12,6 +12,6 @@ const { isAuthenticated } = storeToRefs(authStore)
 <template>
   <main>
     <UserAuth v-if="!isAuthenticated"></UserAuth>
-    <SleepForm></SleepForm>
+    <SleepForm v-else></SleepForm>
   </main>
 </template>
