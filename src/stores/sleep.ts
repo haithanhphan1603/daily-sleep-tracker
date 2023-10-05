@@ -11,37 +11,33 @@ interface SleepData {
 }
 
 export const useSleepStore = defineStore('sleep', () => {
-  const sleepData = ref<SleepData>()
+  const sleepData = ref<SleepData[]>()
   const authStore = useAuthStore()
+  const token = localStorage.getItem('token')
+  const userId = localStorage.getItem('userId')
+  const databaseURL = `https://daily-sleep-tracker-f2100-default-rtdb.asia-southeast1.firebasedatabase.app/users/${userId}/sleepData.json?auth=${token}`
 
   const fetchSleepData = async () => {
-    const response = await fetch(
-      `https://daily-sleep-tracker-f2100-default-rtdb.asia-southeast1.firebasedatabase.app/sleepData/${userId.value}.json`
-    )
-    const data = await response.json()
-    sleepData.value = data
+    const response = await axios.get(databaseURL)
+
+    if (response.status !== 200) {
+      console.error('Failed to fetch existing data:', response.data)
+      return
+    }
+    sleepData.value = response.data
   }
 
   const addSleepData = async (payload: SleepData) => {
-    const token = localStorage.getItem('token')
-    const userId = localStorage.getItem('userId')
-    const databaseURL = `https://daily-sleep-tracker-f2100-default-rtdb.asia-southeast1.firebasedatabase.app/users/${userId}/sleepData.json?auth=${token}`
     try {
       // Fetch existing data (if any)
-      const response = await axios.get(databaseURL)
+      await fetchSleepData()
 
-      if (response.status !== 200) {
-        console.error('Failed to fetch existing data:', response.data)
-        return
-      }
-
-      const existingData = response.data || [] // Initialize as an empty array if no data exists
+      if (sleepData.value) sleepData.value.push(payload)
 
       // Push new data to the array
-      existingData.push(payload)
 
       // Update the array back to the database
-      const updateResponse = await axios.put(databaseURL, existingData)
+      const updateResponse = await axios.put(databaseURL, sleepData.value)
 
       if (updateResponse.status !== 200) {
         console.error('Failed to update data:', updateResponse.data)
