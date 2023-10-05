@@ -1,9 +1,8 @@
-import { defineStore, storeToRefs } from 'pinia'
+import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { useAuthStore } from './auth'
 import axios from 'axios'
 
-interface SleepData {
+export interface SleepData {
   date: string
   sleepTime: string
   wakeTime: string
@@ -12,7 +11,6 @@ interface SleepData {
 
 export const useSleepStore = defineStore('sleep', () => {
   const sleepData = ref<SleepData[]>()
-  const authStore = useAuthStore()
   const token = localStorage.getItem('token')
   const userId = localStorage.getItem('userId')
   const databaseURL = `https://daily-sleep-tracker-f2100-default-rtdb.asia-southeast1.firebasedatabase.app/users/${userId}/sleepData.json?auth=${token}`
